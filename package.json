@@ -1,0 +1,17 @@
+{
+  "name": "exp-example",
+  "version": "1.0.0",
+  "description": "education purposes",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "noone",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "discord.js": "^11.4.2",
+    "express": "^4.16.4",
+    "nodemon": "^1.18.10"
+  }
+}
