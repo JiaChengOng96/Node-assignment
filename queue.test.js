@@ -79,6 +79,60 @@ describe("queue max length of 1 item", () => {
     });
 });
 
+describe("toArray()", () => {
+
+    test("list initially empty", () => {
+        const q = new Queue();
+        expect(q.toArray()).toEqual([]);
+
+        q.add('abc');
+        q.remove();
+
+        expect(q.toArray()).toEqual([]);
+    });
+
+    test("one item", () => {
+        const q = new Queue();
+        q.add('abc');
+
+        expect(q.toArray()).toEqual(['abc']);
+        q.add('xyz');
+        q.remove();
+
+        expect(q.toArray()).toEqual(['xyz']);
+    });
+
+    test("two item", () => {
+        const q = new Queue();
+        q.add('abc');
+        q.add('def');
+
+        expect(q.toArray()).toEqual(['abc','def']);
+        q.remove();
+        q.add('xyz');
+
+        expect(q.toArray()).toEqual(['def','xyz']);
+    });
+
+    test("many item", () => {
+        const q = new Queue();
+        q.add('a');
+        q.add('a');
+        q.add('a');
+        q.add('a');
+        q.add('a');
+        q.add('a');
+
+        expect(q.toArray()).toEqual(['a','a','a','a','a','a']);
+        q.remove();
+        q.add('b');
+
+        expect(q.toArray()).toEqual(['a','a','a','a','a','b']);
+    });
+
+
+});
+
 describe("remove items in FIFO order", () => {
     const q = new Queue();
 
