@@ -6,6 +6,38 @@ const path = require('path');
 
 const app = express();
 
+const fs = require('fs');
+
+const Queue = require('./queue');
+
+const levels = {
+    INFO: 0,
+    LOW: 1,
+    MEDIUM: 2,
+    HIGH: 3,
+    SEVERE: 4
+};
+
+const logger = winston.createLogger({
+    level: 'SEVERE',
+    
+    format: winston.format.json(),
+    defaultMeta: { service: 'user-service' },
+    transports: [
+      //
+      // - Write to all logs with level `info` and below to `combined.log` 
+      // - Write all logs error (and below) to `error.log`.
+      //
+      new winston.transports.File({ filename: 'error.log', level: 'error' }),
+      new winston.transports.File({ filename: 'combined.log' })
+    ]
+  });
+
+const LOG_FILE_NAME = "log1.txt";
+
+// FIXME: this assume it opens before the server finishes starting up
+const logWriteStream = fs.createWriteStream(LOG_FILE_NAME, { flags: 'a', });
+
 // process.env.PORT lets the port be set by Heroku
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
@@ -34,21 +66,10 @@ app.use(bodyParser.urlencoded({extended: false}));
 // using this with path.join is safer than the option that doesn't
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/', (req, res) => {
-    res.send('hello world');
-});
+app.get('/data.js', (req, res) => {
+    const object = [{id:1}, {id: 5}];
 
-app.get("/goodbye", (req, res) => {
-    res.send('goodbye world');
-});
-
-        
-app.get('/people', (req, res) => {
-    res.header('Content-Security-Policy', "img-src \'self\'; report-uri /report")
-    res.send("Some sample text!! <img src='https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Flowchart_showing_Simple_and_Preflight_XHR.svg/768px-Flowchart_showing_Simple_and_Preflight_XHR.svg.png' alt='mixed'>" +
-
-
-    "<img src='http://telstra.com.au/myimg.png'>");
+    res.send(`var logList = ${JSON.stringify(object)}`);
 });
 
 let unique = 1;
@@ -78,16 +99,41 @@ function createLog(report){
 
     return newLog;
 }
+
+const logCache = new Queue();
+
+function queueLog(log) {
+    logCache.add(log);
+    while (logCache.length() > 1000){
+        const oldestLog = logCache.remove();
+        console.log('Remove oldest log not implemented yet!!!')
+        //logWriteStream.write(JSON.stringify(oldestLog));
+    }
+    
+}
+
+// Handles SIGINT (generatted by CTRL+C or can be manually sent using kill)
+process.on('SIGINT', () => {
+    console.log('\nReceived SIGINT, Flushing logs to log file');
+    while(logCache.length() > 0){
+
+    }
+});
 // route
 // handles post requests to any url
 app.post('/*', (req, res) => {
     console.log(req.body);
 
-    // handle the report in some way
+    // this is sent by the browser ormatted as a standard csp report
+    // see https://developer.mozilla.org/en-us/docs/Web/HTTP/CSP#Violation_report_syntax
+    // you can also violate csp in your broswer and watch the network dev tools
+
+    // or console log the req.body -> console.log(req.body)
     const report = req.body["csp-report"];
 
-    let newLog = createLog(report);
+    const newLog = createLog(report);
 
+    queueLog(newLog);
     
     res.end();
 });

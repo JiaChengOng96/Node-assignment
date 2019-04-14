@@ -4,13 +4,14 @@
   "description": "education purposes",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "noone",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.3",
-    "express": "^4.16.4"
+    "express": "^4.16.4",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "jest": "^24.7.1",
