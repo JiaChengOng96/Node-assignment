@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
     // core module, so doesn't need to be npm installed
 const path = require('path');
 
+const winston = require('winston');
+
 const app = express();
 
 const fs = require('fs');
@@ -16,9 +18,13 @@ const levels = {
     UNKNOWN: 2,
 };
 
+const myFormat = winston.format.printf((log) => {
+    return `${log.severity}: ${JSON.stringify(log, null, 4)}\n--------------------\n`;
+});
+
 const logger = winston.createLogger({
     level: 'UNKNOWN',
-    
+    levels: levels,
     format: winston.format.json(),
     defaultMeta: { service: 'user-service' },
     transports: [
@@ -26,31 +32,22 @@ const logger = winston.createLogger({
       // - Write to all logs with level `info` and below to `combined.log` 
       // - Write all logs error (and below) to `error.log`.
       //
-      new winston.transports.File({ filename: 'error.log', level: 'error' }),
-      new winston.transports.File({ filename: 'combined.log' })
+      new winston.transports.File({ 
+            filename: 'reports.log',
+            maxsize: 10000000,
+            format: myFormat,
+        }),
+      new winston.transports.Console({ 
+            format: myFormat,
+        }),
     ]
   });
-
-const LOG_FILE_NAME = "log1.txt";
-
-// FIXME: this assume it opens before the server finishes starting up
-const logWriteStream = fs.createWriteStream(LOG_FILE_NAME, { flags: 'a', });
 
 // process.env.PORT lets the port be set by Heroku
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server running on ${port}`);
 });
-
-/* EXAMPLE OF MIDDLEWARE
-// custom middleware
-const logger = ((req, res, next) => {
-    console.log('logging...');
-    next();
-})
-// allows us to use the custom middleware
-app.use(logger);
-*/
 
 /* BODY PARSER MIDDLEWARE */
 // handle parsing json content
@@ -81,19 +78,19 @@ function createLog(report){
 
     const violatedDirective = report["violated-directive"];
 
-    let severity = 'unknown';
+    let severity = 'UNKNOWN';
 
     if(violatedDirective == 'style-src') {
-        severity = "moderate";
+        severity = "MODERATE";
     } else if (violatedDirective == 'script-src'){
-        severity = "high";
+        severity = "SEVERE";
     }
 
     const newLog = {
         id:         id, 
         severity:   severity,
         reportType: violatedDirective,
-        timestamp:  Math.floor(new Date().getTime() / 1000),
+        timestamp:  new Date().getTime() / 1000,
     };
 
     return newLog;
@@ -105,23 +102,30 @@ function queueLog(log) {
     logCache.add(log);
     while (logCache.length() > 1000){
         const oldestLog = logCache.remove();
-        console.log('Remove oldest log not implemented yet!!!')
-        //logWriteStream.write(JSON.stringify(oldestLog));
+        logger.log(oldestLog.severity, oldestLog);
     }
     
 }
 
 // Handles SIGINT (generatted by CTRL+C or can be manually sent using kill)
 process.on('SIGINT', () => {
-    console.log('\nReceived SIGINT, Flushing logs to log file');
+    console.log('Received SIGINT, Flushing logs to log file');
     while(logCache.length() > 0){
-
+        const oldestLog = logCache.remove();
+        logger.log(oldestLog.severity, oldestLog);
     }
+    logger.end();
+    logger.on('finish', () =>{
+        console.log("Exiting.....");
+        process.exit(0)
+    });
+
 });
+
+
 // route
 // handles post requests to any url
 app.post('/*', (req, res) => {
-    console.log(req.body);
 
     // this is sent by the browser ormatted as a standard csp report
     // see https://developer.mozilla.org/en-us/docs/Web/HTTP/CSP#Violation_report_syntax
