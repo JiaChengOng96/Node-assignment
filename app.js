@@ -11,15 +11,13 @@ const fs = require('fs');
 const Queue = require('./queue');
 
 const levels = {
-    INFO: 0,
-    LOW: 1,
-    MEDIUM: 2,
-    HIGH: 3,
-    SEVERE: 4
+    SEVERE: 0,
+    MODERATE: 1,
+    UNKNOWN: 2,
 };
 
 const logger = winston.createLogger({
-    level: 'SEVERE',
+    level: 'UNKNOWN',
     
     format: winston.format.json(),
     defaultMeta: { service: 'user-service' },
@@ -56,7 +54,8 @@ app.use(logger);
 
 /* BODY PARSER MIDDLEWARE */
 // handle parsing json content
-app.use(bodyParser.json({ type: 'application/*+json' }));
+app.use(bodyParser.json());
+app.use(bodyParser.json({ type: 'application/csp-report' }));
 // handle parsing urlencoded content [extended explained here: https://www.npmjs.com/package/body-parser#extended]
 app.use(bodyParser.urlencoded({extended: false}));
 
@@ -67,7 +66,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/data.js', (req, res) => {
-    const object = [{id:1}, {id: 5}];
+    const object = logCache.toArray();
 
     res.send(`var logList = ${JSON.stringify(object)}`);
 });
