@@ -1,5 +1,3 @@
-import { blockStatement } from "@babel/types";
-
 // search for the DOM element with the id of entry-template and get all the inner html tag
 const source   = document.getElementById("entry-template").innerHTML;
 // setup
@@ -32,7 +30,7 @@ addArrayToBtree(0, logList.length - 1);
 function refilter() {
     //declare const variable to get data form user input
     const fromDate = new Date();
-    const fromTimeField = document.getElementById('fromtie').value;
+    const fromTimeField = document.getElementById('fromtime').value;
     const toTimeFeild = document.getElementById('totime').value;
     
     // console log to debug
@@ -54,7 +52,7 @@ function refilter() {
             const toDate = new Date()
 
             // the split method return array so after split we need to store in an array of hours, minutes, seconds
-            let [hours, minutes, seconds] = document.getElementById('totime').value.split(':');
+            [hours, minutes, seconds] = document.getElementById('totime').value.split(':');
 
             // setting the time for fromDate based on the value gotten from input and getting the time in seconds
             toDate.setHours(hours, minutes, seconds, 999);
