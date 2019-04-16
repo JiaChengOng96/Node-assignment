@@ -4,7 +4,7 @@ const child_process = require('child_process')
 // 2nd part of '|' => replace double space with single space
 // 3rd part of '|' => take the feild 5 of the listing which is the file size
 
-const cmd1 = "ls -lt reports*.log | sed 's/ */ /g' | cut -d ' ' -f 5 | head -n 1";
+const cmd1 = "ls -lt reports*.log | sed 's/  */ /g' | cut -d ' ' -f 5 | head -n 1";
 
 // second command method
 // 2nd and 3rd part of '|' => find 4 group of chars followed by spaces (using{4}), and replace line with the next group
