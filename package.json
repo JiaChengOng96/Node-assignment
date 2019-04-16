@@ -4,7 +4,9 @@
   "description": "education purposes",
   "main": "app.js",
   "scripts": {
-    "test": "jest"
+    "test"  : "jest",
+    "dev"   : "nodemon app.js",
+    "start" : "node app.js"
   },
   "author": "noone",
   "license": "ISC",
