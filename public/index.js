@@ -6,6 +6,11 @@ const template = Handlebars.compile(source);
 // data that will be render into webpage
 //const context = {title: "My New Post", body: "This is my first post!"};
 
+for (let i = 0; i < logList.length; i++) {
+    const datetime = new Date(logList[i].timestamp * 1000).toLocaleString();
+    logList[i].datetime = datetime;
+}
+
 const bTree = new BST();
 
 function addArrayToBtree(firstIndex, lastIndex) {
