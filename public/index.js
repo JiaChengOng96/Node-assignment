@@ -14,7 +14,7 @@ function addArrayToBtree(firstIndex, lastIndex) {
         return;
     }
 
-    const medianIndex = Math.floor((firstIndex + LastIndex) / 2);
+    const medianIndex = Math.floor((firstIndex + lastIndex) / 2);
 
     bTree.insert(logList[medianIndex].timestamp, logList[medianIndex]);
 
