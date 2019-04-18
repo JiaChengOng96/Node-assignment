@@ -24,7 +24,7 @@ some of the package is require to run this log manager on the machine which incl
 1. clone the repo into your machine
 
         git clone git@github.com:JiaChengOng96/dsd-sec-reporter.git
-        git clone git@github.com:JiaChengOng96/node-exp-eg.git
+        git clone git@github.com:JiaChengOng96/Node-assignment.git
 
 2. Follow the instruction for dsd-sec-reporter README file to install and setup for reporter
 
