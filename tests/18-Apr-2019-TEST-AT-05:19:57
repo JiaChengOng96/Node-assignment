@@ -1,0 +1,12 @@
+
+> exp-example@1.0.0 test /root/Documents/assignment4/node-exp-example
+> jest
+
+PASS test/bst.test.js
+PASS test/queue.test.js
+
+Test Suites: 2 passed, 2 total
+Tests:       20 passed, 20 total
+Snapshots:   0 total
+Time:        5.1s
+Ran all test suites.

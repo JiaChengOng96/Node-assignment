@@ -1,4 +1,4 @@
-const Queue = require('./queue');
+const Queue = require('../queue');
 
 
 describe("test the length method", () => {
