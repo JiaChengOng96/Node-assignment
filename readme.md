@@ -2,6 +2,8 @@
 
 This is a simple log manager which will accept error log data based on the violated-directive from the reporter and create log file to uniquely identify each log which showing all log in tabular format on the front end webpages.
 
+links: https://github.com/JiaChengOng96/Node-assignment
+
 ### Requirement
 
 some of the package is require to run this log manager on the machine which includes 
@@ -55,7 +57,7 @@ NOTES: Jest would only perform the test case provide such as queue.test.js in je
 
 In this application, we are using winston to format the created log in a readable format as well as determine the severity of the error log. In real world, there would be many error log everyday and many error log would be just informational. Thus by creating an algorithm to categories the severity of the log, admin would be able to remove all low severity log and focus only severe level logs.
 
-Our application can only detect from two source which is style-src and script-src. For style-src would be categories as moderate severity and script-src would be categories as severe severity. Other than these two it would be unknown to the logging.
+Our application can only detect from two source which is style-src and script-src. For style-src would be categories as moderate severity and script-src would be categories as severe severity. Other than these two it would be unknown to the logging. The reason being capable of maniputating script file provide more chance of being exploit while exploiting stylesheet only provide at most capability to manipulate the web page design.
 
 ### Constraint and Limitation
 
